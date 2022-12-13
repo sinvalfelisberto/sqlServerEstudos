@@ -809,3 +809,4 @@ select stuff('71824561172', 4, 5, 'XXXXX') as CPF
 -- - Fun��o CHARINDEX
 -- - Estrutura de repeti��o WHILE
 -- testando o git por aqui
+-- agora no online
