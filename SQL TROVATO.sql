@@ -13,7 +13,7 @@ select t.* into #turmas from turmas t
 
 select t.* from #turmas t
 
-select t.id_turma IDT, t.id_curso IDC, FORMAT(t.data_inicio, 'dd/MM/yyyy') 'DATA COMEÇO'
+select t.id_turma IDT, t.id_curso IDC, FORMAT(t.data_inicio, 'dd/MM/yyyy') 'DATA COMEï¿½O'
 from #turmas t
 
 drop table dbo.#turmas
@@ -89,7 +89,7 @@ select	c.id_curso
  group by c.nome_curso, c.id_curso
 
 
---todos os cursos, independente se há ou não turmas
+--todos os cursos, independente se hï¿½ ou nï¿½o turmas
 select	c.nome_curso, 
 		count(t.id_curso) Total_Turmas
   from turmas t
@@ -129,18 +129,18 @@ group by t.id_turma, c.nome_curso
 
 --matematica com sql server
 select   1 + 2 as Resultado --soma
-select 2 - 3 as Subtração --subtração
-select cast(458.99 * 2.59 as numeric(15,2)) as Multiplicacao --multiplicacão
-select cast(458.99/ 2.59 as numeric(15,2)) as Divisão
+select 2 - 3 as Subtraï¿½ï¿½o --subtraï¿½ï¿½o
+select cast(458.99 * 2.59 as numeric(15,2)) as Multiplicacao --multiplicacï¿½o
+select cast(458.99/ 2.59 as numeric(15,2)) as Divisï¿½o
 
---potenciação
+--potenciaï¿½ï¿½o
 select POWER(3, 3) cubo, square(3) quadrado
 
 --PERCENTAGEM
 select 100 * 1.1 as resultado
 select 100 +(100 * .1) resultado
 
---abs retorna o número sem o sinal
+--abs retorna o nï¿½mero sem o sinal
 select abs(100-999) as absoluto
 select abs(-1) as absoluto
 
@@ -155,12 +155,12 @@ select getdate() data_hora_atual
 select format(getdate(), 'dd/MM/yyyy  HH:mm') data_hora_atual_formatada
 
 select cast(getdate() as date) so_data
-select cast(getdate() as time) só_hora
+select cast(getdate() as time) sï¿½_hora
 
---SIGNAL (retorna -1 se o número for negativo e +1 se for positivo)
+--SIGNAL (retorna -1 se o nï¿½mero for negativo e +1 se for positivo)
 select sign(-100) as negativo ,sign(10) as positivo, sign(null) as nulo, sign(0) as zero
 
---sum função de agregação soma valores de colunas inteiras
+--sum funï¿½ï¿½o de agregaï¿½ï¿½o soma valores de colunas inteiras
 select sum(1500 + 7777)
 
 --AULA 13 - O USO DO IN, NOT IN, DISTINCT NO SELECT
@@ -229,7 +229,7 @@ inner join Alunos on Alunos.id_aluno = AlunosxTurmas.id_aluno
 where Alunos.sexo = 'm'
 order by 2
 
---aula 14 - Função de Agregação SUM
+--aula 14 - Funï¿½ï¿½o de Agregaï¿½ï¿½o SUM
 
 select	c.nome_curso,
 		t.id_turma,
@@ -246,7 +246,7 @@ select	c.nome_curso,
 		--sum(valor_bruto) va,
 		sum(at.valor) valor_bruto,
 		cast(sum(at.valor * at.valor_desconto) as decimal(15,2)) as Valor_desconto,
-		cast(sum(at.valor - (valor_desconto * at.valor)) as numeric(15,2)) 'Valor Líquido'
+		cast(sum(at.valor - (valor_desconto * at.valor)) as numeric(15,2)) 'Valor Lï¿½quido'
 		--sum(at.valor - (valor_desconto * at.valor)) total
 
   from	Turmas t
@@ -261,7 +261,7 @@ group by c.nome_curso
 		at.id_turma,
 		sum(at.valor) valor_bruto,
 		cast(sum(at.valor * at.valor_desconto) as decimal(15,2)) as Valor_desconto,
-		cast(sum(at.valor - (valor_desconto * at.valor)) as numeric(15,2)) 'Valor Líquido'
+		cast(sum(at.valor - (valor_desconto * at.valor)) as numeric(15,2)) 'Valor Lï¿½quido'
   from	Turmas t
 		inner join AlunosxTurmas at on at.id_turma = t.id_turma
 		inner join Cursos c on c.id_curso = t.id_curso
@@ -272,7 +272,7 @@ group by c.nome_curso, at.id_turma
 		at.id_turma,
 		sum(at.valor) valor_bruto,
 		round(sum(at.valor * at.valor_desconto), 2) as Valor_desconto, --prefiro o cast
-		round(sum(at.valor - (valor_desconto * at.valor)), 2) 'Valor Líquido' -- aqui também
+		round(sum(at.valor - (valor_desconto * at.valor)), 2) 'Valor Lï¿½quido' -- aqui tambï¿½m
   from	Turmas t
 		inner join AlunosxTurmas at on at.id_turma = t.id_turma
 		inner join Cursos c on c.id_curso = t.id_curso
@@ -284,7 +284,7 @@ group by c.nome_curso, at.id_turma
 		--at.id_turma,
 		sum(at.valor) valor_bruto,
 		cast(sum(at.valor * at.valor_desconto) as decimal(15,2)) as Valor_desconto, --prefiro o cast
-		cast(sum(at.valor - (valor_desconto * at.valor)) as decimal(15,2)) 'Valor Líquido' -- aqui também
+		cast(sum(at.valor - (valor_desconto * at.valor)) as decimal(15,2)) 'Valor Lï¿½quido' -- aqui tambï¿½m
   from	Turmas t
 		inner join AlunosxTurmas at on at.id_turma = t.id_turma
 		inner join Cursos c on c.id_curso = t.id_curso
@@ -296,13 +296,13 @@ group by year(t.data_inicio)--, c.nome_curso, at.id_turma,
 		--at.id_turma,
 		sum(at.valor) valor_bruto,
 		cast(sum(at.valor * at.valor_desconto) as decimal(15,2)) as Valor_desconto, --prefiro o cast
-		cast(sum(at.valor - (valor_desconto * at.valor)) as decimal(15,2)) 'Valor Líquido' -- aqui também
+		cast(sum(at.valor - (valor_desconto * at.valor)) as decimal(15,2)) 'Valor Lï¿½quido' -- aqui tambï¿½m
   from	Turmas t
 		inner join AlunosxTurmas at on at.id_turma = t.id_turma
 		inner join Cursos c on c.id_curso = t.id_curso
 group by datename(month, t.data_inicio) --, c.nome_curso, at.id_turma,
 
---funções de agregação --> sum, count, avg, max e min
+--funï¿½ï¿½es de agregaï¿½ï¿½o --> sum, count, avg, max e min
 select * from AlunosxTurmas
 
 select sum(valor) as total from AlunosxTurmas
@@ -340,7 +340,7 @@ select	t.id_curso,
 		inner join Cursos c on c.id_curso = t.id_curso
 group by t.id_curso, c.nome_curso
 
---average (média)
+--average (mï¿½dia)
 select	t.id_curso,
 		c.nome_curso,
 		cast(avg(at.valor) as numeric(15,2)) total
@@ -349,7 +349,7 @@ select	t.id_curso,
 		inner join Cursos c on c.id_curso = t.id_curso
 group by t.id_curso, c.nome_curso
 
---max --> o máximo de um valor
+--max --> o mï¿½ximo de um valor
 select	t.id_curso,
 		c.nome_curso,
 		cast(max(at.valor) as numeric(15,2)) total
@@ -359,7 +359,7 @@ select	t.id_curso,
 group by t.id_curso, c.nome_curso
 
 
---min --> o máximo de um valor
+--min --> o mï¿½ximo de um valor
 select	t.id_curso,
 		c.nome_curso,
 		cast(min(at.valor) as numeric(15,2)) total
@@ -372,8 +372,8 @@ group by t.id_curso, c.nome_curso
 --max e min --> juntos na mesma query
 select	t.id_curso,
 		c.nome_curso,
-		cast(max(at.valor) as numeric(15,2)) Máximo,
-		cast(min(at.valor) as numeric(15,2)) Mínimo,
+		cast(max(at.valor) as numeric(15,2)) Mï¿½ximo,
+		cast(min(at.valor) as numeric(15,2)) Mï¿½nimo,
 		cast(sum(at.valor * at.valor_desconto) as numeric(15,2)) valor_desconto,
 		cast(sum(at.valor - (at.valor * at.valor_desconto)) as numeric(15,2)) as total
   from	AlunosxTurmas at
@@ -385,9 +385,9 @@ group by t.id_curso, c.nome_curso
 
 select v.nome_curso, v.total from (select	t.id_curso,
 		c.nome_curso,
-		cast(max(at.valor) as numeric(15,2)) Máximo,
-		cast(min(at.valor) as numeric(15,2)) Mínimo,
-		max(at.valor) - min(at.valor) as DIFERENÇA,
+		cast(max(at.valor) as numeric(15,2)) Mï¿½ximo,
+		cast(min(at.valor) as numeric(15,2)) Mï¿½nimo,
+		max(at.valor) - min(at.valor) as DIFERENï¿½A,
 		cast(sum(at.valor * at.valor_desconto) as numeric(15,2)) valor_desconto,
 		cast(sum(at.valor - (at.valor * at.valor_desconto)) as numeric(15,2)) as total
   from	AlunosxTurmas at
@@ -397,8 +397,8 @@ group by t.id_curso, c.nome_curso) v
 
 where v.total > 1200
 
---aula 16 -funções de com datas
---funções: getdate(), datepart, dateadd, datediff
+--aula 16 -funï¿½ï¿½es de com datas
+--funï¿½ï¿½es: getdate(), datepart, dateadd, datediff
 		--unidades: year, month, day
 
 --getdate()
@@ -447,26 +447,26 @@ select convert(smalldatetime, dateadd(hour, 3, getdate()))
 --datediff
 select datediff(year,  '24/08/1982', '23/08/2022') idade
 
---Conteúdo da aula:
--- - Função ASCII
--- - Função NCHAR
--- - Função CHAR
--- - Função CHARINDEX
--- - Função CONCAT
--- - Função CONCAT_WS
--- - Função DIFFERENCE
+--Conteï¿½do da aula:
+-- - Funï¿½ï¿½o ASCII
+-- - Funï¿½ï¿½o NCHAR
+-- - Funï¿½ï¿½o CHAR
+-- - Funï¿½ï¿½o CHARINDEX
+-- - Funï¿½ï¿½o CONCAT
+-- - Funï¿½ï¿½o CONCAT_WS
+-- - Funï¿½ï¿½o DIFFERENCE
 
--- - Função ASCII
+-- - Funï¿½ï¿½o ASCII
 select ascii('a')
 select ascii('A')
 select ascii('9')
 
--- - Função NCHAR
+-- - Funï¿½ï¿½o NCHAR
 select nchar(97)
 select nchar(65)
 select nchar(57)
 
--- - Função CHAR --> igual nchar
+-- - Funï¿½ï¿½o CHAR --> igual nchar
 select char(97)
 select char(65)
 select char(57)
@@ -512,8 +512,8 @@ select concat_ws(' ', 'Sinval', 'Amaral', 'Felisberto')
 select concat_ws(	' - ', 
 					a.nome, 
 					c.nome_curso,
-					'Início: ' + convert(char, t.data_inicio, 103),
-					'Término: ' + convert(char, t.data_termino, 103)
+					'Inï¿½cio: ' + convert(char, t.data_inicio, 103),
+					'Tï¿½rmino: ' + convert(char, t.data_termino, 103)
 				) 
 from	alunos a
 		inner join AlunosxTurmas at on at.id_aluno = a.id_aluno
@@ -525,8 +525,8 @@ order by 1
 select concat_ws(	' - ', 
 					a.nome, 
 					c.nome_curso,
-					'Início: ' + trim(convert(char, t.data_inicio, 103)),
-					'Término: ' + trim(convert(char, t.data_termino, 103))
+					'Inï¿½cio: ' + trim(convert(char, t.data_inicio, 103)),
+					'Tï¿½rmino: ' + trim(convert(char, t.data_termino, 103))
 				) 
 from	alunos a
 		inner join AlunosxTurmas at on at.id_aluno = a.id_aluno
@@ -544,8 +544,8 @@ select * from	(
 				select concat_ws(	' - ', 
 					a.nome, 
 					c.nome_curso,
-					'Início: ' + trim(convert(char, t.data_inicio, 103)),
-					'Término: ' + trim(convert(char, t.data_termino, 103))
+					'Inï¿½cio: ' + trim(convert(char, t.data_inicio, 103)),
+					'Tï¿½rmino: ' + trim(convert(char, t.data_termino, 103))
 								) linha
 				from	alunos a
 						inner join AlunosxTurmas at on at.id_aluno = a.id_aluno
@@ -570,21 +570,21 @@ select @total as Valor_total,
 case 
 	when @total > @valorAVista then concat_ws(' - ','Possui juros no parcelamento!','Valor do Juros: ', format(sum(@total - @valorAVista), 'c', 'pt-br'))
 	when @total < @valorAVista then concat_ws(' - ', 'Item com desconto no parcelamento!/n', format(sum(@total - @valorAVista), 'c', 'pt-br'))
-	else 'Não possui juros no valor'
+	else 'Nï¿½o possui juros no valor'
 end as Mensagem_Importante
 
---FORMATAÇÃO DE CPF, CEP, NIS... só funciona se não tiver o zero no início
+--FORMATAï¿½ï¿½O DE CPF, CEP, NIS... sï¿½ funciona se nï¿½o tiver o zero no inï¿½cio
 SELECT	FORMAT( 76901122, '##-###\.###' ) AS CEP,
 		FORMAT(07182456117, '###\.###\.###-##') AS CPF
 
 --aula 18
---Conteúdo da aula:
--- - Função FORMAT - formação com base em critérios regionais
--- - Função LEFT - extração de textos a esquerda
--- - Função RIGHT - extração de textos a direita
--- - Função LEN - tamanho do conteúdo de um campo
--- - Função LOWER  - converte caracteres para minúsculo
--- - Função UPPER - converte caracteres para maiúsculo
+--Conteï¿½do da aula:
+-- - Funï¿½ï¿½o FORMAT - formaï¿½ï¿½o com base em critï¿½rios regionais
+-- - Funï¿½ï¿½o LEFT - extraï¿½ï¿½o de textos a esquerda
+-- - Funï¿½ï¿½o RIGHT - extraï¿½ï¿½o de textos a direita
+-- - Funï¿½ï¿½o LEN - tamanho do conteï¿½do de um campo
+-- - Funï¿½ï¿½o LOWER  - converte caracteres para minï¿½sculo
+-- - Funï¿½ï¿½o UPPER - converte caracteres para maiï¿½sculo
 
 --format
 --declare @dt datetime = getdate()
@@ -600,7 +600,7 @@ SELECT	FORMAT( 76901122, '##-###\.###' ) AS CEP,
 --		format(21300012145.37,'G', 'pt-br' ) numero_formato_geral,
 --		format(21300012145.37,'C', 'pt-br' ) numero_como_dinheiro
 
---left -> extrai caracteres à esquerda
+--left -> extrai caracteres ï¿½ esquerda
 select left('Sinval Felisberto', 6)
 select right('Sinval Felisberto', 10)
 
@@ -665,20 +665,20 @@ select	nome,
 
 drop table #TesteCursor
 
---aula 19 - funções de texto
---Conteúdo da aula:
--- Função LTRIM - Elimina espaços à esquerda de uma string
--- Função RTRIM - Elimina espaços à direita de uma string
--- Função PATINDEX - Localiza parte de textos em strings
--- Função REPLACE - Substitui caracteres nos campos
--- Função REPLICATE - Replica um caractere pelo número definido
--- Função REVERSE - Inverte uma string de texto
+--aula 19 - funï¿½ï¿½es de texto
+--Conteï¿½do da aula:
+-- Funï¿½ï¿½o LTRIM - Elimina espaï¿½os ï¿½ esquerda de uma string
+-- Funï¿½ï¿½o RTRIM - Elimina espaï¿½os ï¿½ direita de uma string
+-- Funï¿½ï¿½o PATINDEX - Localiza parte de textos em strings
+-- Funï¿½ï¿½o REPLACE - Substitui caracteres nos campos
+-- Funï¿½ï¿½o REPLICATE - Replica um caractere pelo nï¿½mero definido
+-- Funï¿½ï¿½o REVERSE - Inverte uma string de texto
 
 --ltrim
 select ltrim('                Sinval Felisberto')
 
 declare	@varTexto varchar(50)
-	set @varTexto = '     este é um texto de exemplo de LTRIM'
+	set @varTexto = '     este ï¿½ um texto de exemplo de LTRIM'
 
 select ltrim(@varTexto) as Teste
 select resultado = ltrim(@varTexto)
@@ -687,22 +687,22 @@ select resultado = ltrim(@varTexto)
 select rtrim('Sinval              ')
 
 declare @varTexto2 varchar(50)
-	set @varTexto2 = 'Este é um texto de exemplo do RTRIM        '
+	set @varTexto2 = 'Este ï¿½ um texto de exemplo do RTRIM        '
 select resultado = rtrim(@varTexto2)
 
 --PATINDEX
--- Retorna a posição inicial da primeira ocorrência de um padrão.
-select PATINDEX('%rto%', 'Sinval Felisberto') as posição
+-- Retorna a posiï¿½ï¿½o inicial da primeira ocorrï¿½ncia de um padrï¿½o.
+select PATINDEX('%rto%', 'Sinval Felisberto') as posiï¿½ï¿½o
 
 --substring
 declare @varTexto3 varchar(100)
-	set @varTexto3 = 'Aqui é o canal do Alessandro Trovato no Youtube'
+	set @varTexto3 = 'Aqui ï¿½ o canal do Alessandro Trovato no Youtube'
 
 select resultado = SUBSTRING(@varTexto3, PATINDEX('%Trovato%',@varTexto3), 7)
 
 --replace
-select saída = replace('Sinval Felisberto', 's', 'Ç')
-select saída = replace(replace('Sinval Felisberto', 's', 'Ç'), 'l', '1')
+select saï¿½da = replace('Sinval Felisberto', 's', 'ï¿½')
+select saï¿½da = replace(replace('Sinval Felisberto', 's', 'ï¿½'), 'l', '1')
 
 use SQL_SERVER_TROVATO
 select	a.nome,
@@ -714,12 +714,12 @@ declare @cpf varchar(15)
 	set @cpf = '111.222.333-72'
 	set @cpf = replace(replace(@cpf, '.', ''), '-', '')
 
-select SêPêÉfe = @cpf
+select Sï¿½Pï¿½ï¿½fe = @cpf
 
 --replicate IDEAL PARA CRIAR ARQUIVOS DE DADOS
 select len(nome) from alunos
 
-SELECT NOME + REPLICATE(' ', 50 - LEN(NOME))
+SELECT NOME + REPLICATE('ï¿½', 50 - LEN(NOME))
 FROM ALUNOS
 
 SELECT LEN(NOME + REPLICATE(' ', 50 - LEN(NOME)) + SEXO)
@@ -728,15 +728,15 @@ FROM ALUNOS
 --REVERSE
 SELECT REVERSE('SINVAL AMARAL')
 
---Conteúdo da aula:
--- - Função STRING_AGG - Agrupamento de string com definição de separador
--- - Função SPACE - Preenchimento de uma string de espaços
--- - Função STUFF - Substitui cadeias inteiras de caracteres
--- - Declaração e uso de variáveis
--- - Função DATEPART
--- - Função TRIM
+--Conteï¿½do da aula:
+-- - Funï¿½ï¿½o STRING_AGG - Agrupamento de string com definiï¿½ï¿½o de separador
+-- - Funï¿½ï¿½o SPACE - Preenchimento de uma string de espaï¿½os
+-- - Funï¿½ï¿½o STUFF - Substitui cadeias inteiras de caracteres
+-- - Declaraï¿½ï¿½o e uso de variï¿½veis
+-- - Funï¿½ï¿½o DATEPART
+-- - Funï¿½ï¿½o TRIM
 
---Função SPACE - Preenchimento de uma string de espaços
+--Funï¿½ï¿½o SPACE - Preenchimento de uma string de espaï¿½os
 select 'sinval' + space(25) + 'x'
 
 declare @vNome varchar(50)
@@ -750,7 +750,7 @@ from alunos a
 select	a.nome + space(50 - len(a.nome)) + 
 		convert(nvarchar (4), datepart(year, a.data_nascimento)) +
 		convert(nvarchar (2), datepart(month, a.data_nascimento)) +
-		convert(nvarchar (2), datepart(day, a.data_nascimento)) --aqui o dia sairia com 1 digito, caso seja menor que 10 !não usar!
+		convert(nvarchar (2), datepart(day, a.data_nascimento)) --aqui o dia sairia com 1 digito, caso seja menor que 10 !nï¿½o usar!
 from alunos a
 
 select	len(a.nome + space(50 - len(a.nome)) + 
@@ -763,7 +763,7 @@ select	len(a.nome + space(50 - len(a.nome)) +
 		format(a.data_nascimento, 'yyyyMMdd'))
 from alunos a
 
---STRING_AGG: Agrupamento de string com definição de separador
+--STRING_AGG: Agrupamento de string com definiï¿½ï¿½o de separador
 
 SELECT STRING_AGG(convert(nvarchar(max), sexo), ';') as registro
 from alunos a
@@ -785,7 +785,7 @@ from alunos a
 group by datepart(year, a.data_nascimento)
 
 
-  select	datepart(month, a.data_nascimento) mês,
+  select	datepart(month, a.data_nascimento) mï¿½s,
 			string_agg(convert(nvarchar(max), a.nome+ space(2) + format(a.data_nascimento, 'dd/MM')), ' - ') 
 				within group (order by datepart(year, a.data_nascimento) asc) as registro
     from alunos a
@@ -798,13 +798,14 @@ select stuff('71824561172', 4, 5, 'XXXXX') as CPF
 
 
 -- Aula 21
---Conteúdo da aula:
--- - Função SUBSTRING
--- - Função TRIM
--- - Função TRANSLATE
--- - Função UPPER
--- - Função LOWER
--- - Função IIF
--- - Função REPLACE
--- - Função CHARINDEX
--- - Estrutura de repetição WHILE
+--Conteï¿½do da aula:
+-- - Funï¿½ï¿½o SUBSTRING
+-- - Funï¿½ï¿½o TRIM
+-- - Funï¿½ï¿½o TRANSLATE
+-- - Funï¿½ï¿½o UPPER
+-- - Funï¿½ï¿½o LOWER
+-- - Funï¿½ï¿½o IIF
+-- - Funï¿½ï¿½o REPLACE
+-- - Funï¿½ï¿½o CHARINDEX
+-- - Estrutura de repetiï¿½ï¿½o WHILE
+-- testando o git por aqui
