@@ -1101,7 +1101,7 @@ select  s.cache_size,
 
  drop sequence Sequencia
 
- create schema Test
+--create schema Test
 
  create sequence Test.Sequencia
 	as int
