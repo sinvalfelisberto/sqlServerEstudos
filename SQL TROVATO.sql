@@ -875,3 +875,45 @@ DROP TABLE ##TESTECURSOR
 use sql_server_trovato
 select * from alunos a
 select iif(10 > 3, 'Verdadeiro', 'Falso')
+
+--translate
+select translate('2*[3+4]/{7-2}', '[]{}', '()()') as expressao_alterada
+select translate('Sertão do Cariácica', 'ãá', 'aa') as expressao_alterada
+
+--replace
+declare @vOperacao varchar(max) 
+set @vOperacao = '2*[3+4]/{7-2}'
+set @vOperacao = replace(@vOperacao, '[', '(')
+set @vOperacao = replace(@vOperacao, ']', ')')
+set @vOperacao = replace(@vOperacao, '{', '(')
+set @vOperacao = replace(@vOperacao, '}', ')')
+
+select @vOperacao as alterado
+
+--while
+declare @vString varchar(max)
+set @vString = 'SQL            Server                   |'
+while CHARINDEX('  ', @vString) > 0
+	begin
+		set @vString = replace(@vString, '  ', ' ')
+	end
+
+select trim(@vString) as stringAlterada
+
+declare @contador int = 1, 
+		@StringDigitada varchar(max) = 'Numero digitado: '
+
+while @contador <= 10
+	begin
+		select @StringDigitada + cast(@contador as char) as linha
+		set @contador += 1
+	end
+
+--upper // lower
+use SQL_SERVER_TROVATO
+select	a.nome,	
+		upper(a.nome) Maiusculo, 
+		lower(a.nome) Minusculo 
+  from Alunos a
+
+  --função Union e Union All
