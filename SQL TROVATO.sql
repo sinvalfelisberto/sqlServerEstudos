@@ -1041,4 +1041,104 @@ select	p.EnglishProductName,
 		p.Color
   from	DimProduct p
 
-order by 1
+order by 3
+
+--mais um exemplo com union há distinct
+select	p.EnglishProductName, 
+		p.Class, 
+		p.Color
+  from	DimProduct p
+ where p.Color = 'black'
+
+UNION
+
+select	p.EnglishProductName, 
+		p.Class, 
+		p.Color
+  from	DimProduct p
+ where	p.Class is not null
+
+order by 3
+
+--aula 24
+--	sequences:	o que são
+--				como cria-las
+--				como alterar 
+--				como apagar 
+--				como reiniciar 
+
+use SQL_SERVER_TROVATO
+
+select a.* from Alunos a
+select max(a.id_aluno) + 1 from Alunos a
+--gera essa operação automaticamente
+create sequence sequenciaTeste_01
+select next value for sequenciaTeste_01
+
+/*
+tinyint - Range 0 to 255
+smallint - Range -32,768 to 32,767
+int - Range -2,147,483,648 to 2,147,483,647
+bigint - Range -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807 --> Default
+decimal and numeric with a scale of 0.
+*/
+
+drop sequence sequenciaTeste_01
+
+create sequence Sequencia
+	as int
+	start with 1
+	increment by 1
+	minvalue 1
+	maxvalue 999
+	cycle
+	cache 3
+
+select  s.cache_size,
+		s.current_value
+  from sys.sequences s
+ where name = 'Sequencia'
+
+ drop sequence Sequencia
+
+ create schema Test
+
+ create sequence Test.Sequencia
+	as int
+	start with 1
+	increment by 1
+
+select  s.cache_size, s.current_value
+from sys.sequences s
+where s.name = 'Sequencia'
+
+select next value for Test.Sequencia as 'contando'
+
+drop sequence Test.Sequencia
+
+CREATE SEQUENCE Test.seq_Teste02
+	AS NUMERIC
+	START WITH 1
+	INCREMENT BY 1
+
+SELECT NEXT VALUE FOR Test.seq_Teste02 sequencia
+
+select	s.current_value from sys.sequences s where s.name = 'seq_Teste02'
+
+update sys.sequences 
+set current_value = 1
+where name = 'seq_Teste02'
+
+alter sequence Test.seq_Teste02
+	restart with 1
+
+while (select	s.current_value from sys.sequences s where s.name = 'seq_Teste02') < 30
+begin
+	SELECT NEXT VALUE FOR Test.seq_Teste02 sequencia
+end
+
+--teste para alunos
+declare @vIDAluno int
+set @vIDAluno = next value for Test.seq_Teste02
+
+select @vIDAluno as ProximoIDAluno
