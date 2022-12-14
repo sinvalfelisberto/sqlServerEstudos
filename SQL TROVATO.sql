@@ -129,9 +129,9 @@ group by t.id_turma, c.nome_curso
 
 --matematica com sql server
 select   1 + 2 as Resultado --soma
-select 2 - 3 as Subtra��o --subtra��o
+select 2 - 3 as Subtração --subtra��o
 select cast(458.99 * 2.59 as numeric(15,2)) as Multiplicacao --multiplicac�o
-select cast(458.99/ 2.59 as numeric(15,2)) as Divis�o
+select cast(458.99/ 2.59 as numeric(15,2)) as Divisão
 
 --potencia��o
 select POWER(3, 3) cubo, square(3) quadrado
@@ -155,7 +155,7 @@ select getdate() data_hora_atual
 select format(getdate(), 'dd/MM/yyyy  HH:mm') data_hora_atual_formatada
 
 select cast(getdate() as date) so_data
-select cast(getdate() as time) s�_hora
+select cast(getdate() as time) só_hora
 
 --SIGNAL (retorna -1 se o n�mero for negativo e +1 se for positivo)
 select sign(-100) as negativo ,sign(10) as positivo, sign(null) as nulo, sign(0) as zero
@@ -372,8 +372,8 @@ group by t.id_curso, c.nome_curso
 --max e min --> juntos na mesma query
 select	t.id_curso,
 		c.nome_curso,
-		cast(max(at.valor) as numeric(15,2)) M�ximo,
-		cast(min(at.valor) as numeric(15,2)) M�nimo,
+		cast(max(at.valor) as numeric(15,2)) Maximo,
+		cast(min(at.valor) as numeric(15,2)) Minimo,
 		cast(sum(at.valor * at.valor_desconto) as numeric(15,2)) valor_desconto,
 		cast(sum(at.valor - (at.valor * at.valor_desconto)) as numeric(15,2)) as total
   from	AlunosxTurmas at
@@ -385,9 +385,9 @@ group by t.id_curso, c.nome_curso
 
 select v.nome_curso, v.total from (select	t.id_curso,
 		c.nome_curso,
-		cast(max(at.valor) as numeric(15,2)) M�ximo,
-		cast(min(at.valor) as numeric(15,2)) M�nimo,
-		max(at.valor) - min(at.valor) as DIFEREN�A,
+		cast(max(at.valor) as numeric(15,2)) Maximo,
+		cast(min(at.valor) as numeric(15,2)) Minimo,
+		max(at.valor) - min(at.valor) as DIFERENCA,
 		cast(sum(at.valor * at.valor_desconto) as numeric(15,2)) valor_desconto,
 		cast(sum(at.valor - (at.valor * at.valor_desconto)) as numeric(15,2)) as total
   from	AlunosxTurmas at
@@ -663,6 +663,8 @@ select	nome,
   where month(dtnascimento) = 8 and day(DTNASCIMENTO) = 24
   order by DTNASCIMENTO, SEXO
 
+  select * from #testecursor
+
 drop table #TesteCursor
 
 --aula 19 - fun��es de texto
@@ -692,7 +694,7 @@ select resultado = rtrim(@varTexto2)
 
 --PATINDEX
 -- Retorna a posi��o inicial da primeira ocorr�ncia de um padr�o.
-select PATINDEX('%rto%', 'Sinval Felisberto') as posi��o
+select PATINDEX('%rto%', 'Sinval Felisberto') as posicao
 
 --substring
 declare @varTexto3 varchar(100)
@@ -701,8 +703,8 @@ declare @varTexto3 varchar(100)
 select resultado = SUBSTRING(@varTexto3, PATINDEX('%Trovato%',@varTexto3), 7)
 
 --replace
-select sa�da = replace('Sinval Felisberto', 's', '�')
-select sa�da = replace(replace('Sinval Felisberto', 's', '�'), 'l', '1')
+select saida = replace('Sinval Felisberto', 's', ' ')
+select saida = replace(replace('Sinval Felisberto', 's', ' '), 'l', '1')
 
 use SQL_SERVER_TROVATO
 select	a.nome,
@@ -714,12 +716,12 @@ declare @cpf varchar(15)
 	set @cpf = '111.222.333-72'
 	set @cpf = replace(replace(@cpf, '.', ''), '-', '')
 
-select S�P��fe = @cpf
+select CPF = @cpf
 
 --replicate IDEAL PARA CRIAR ARQUIVOS DE DADOS
 select len(nome) from alunos
 
-SELECT NOME + REPLICATE('�', 50 - LEN(NOME))
+SELECT NOME + REPLICATE(' ', 50 - LEN(NOME))
 FROM ALUNOS
 
 SELECT LEN(NOME + REPLICATE(' ', 50 - LEN(NOME)) + SEXO)
@@ -728,15 +730,15 @@ FROM ALUNOS
 --REVERSE
 SELECT REVERSE('SINVAL AMARAL')
 
---Conte�do da aula:
--- - Fun��o STRING_AGG - Agrupamento de string com defini��o de separador
--- - Fun��o SPACE - Preenchimento de uma string de espa�os
--- - Fun��o STUFF - Substitui cadeias inteiras de caracteres
--- - Declara��o e uso de vari�veis
--- - Fun��o DATEPART
--- - Fun��o TRIM
+--Conteúdo da aula:
+-- - Função STRING_AGG - Agrupamento de string com definição de separador
+-- - Função SPACE - Preenchimento de uma string de espaços
+-- - Função STUFF - Substitui cadeias inteiras de caracteres
+-- - Declaração e uso de variáveis
+-- - Função DATEPART
+-- - Função TRIM
 
---Fun��o SPACE - Preenchimento de uma string de espa�os
+--Função SPACE - Preenchimento de uma string de espaços
 select 'sinval' + space(25) + 'x'
 
 declare @vNome varchar(50)
@@ -785,7 +787,7 @@ from alunos a
 group by datepart(year, a.data_nascimento)
 
 
-  select	datepart(month, a.data_nascimento) m�s,
+  select	datepart(month, a.data_nascimento) mês,
 			string_agg(convert(nvarchar(max), a.nome+ space(2) + format(a.data_nascimento, 'dd/MM')), ' - ') 
 				within group (order by datepart(year, a.data_nascimento) asc) as registro
     from alunos a
@@ -798,15 +800,78 @@ select stuff('71824561172', 4, 5, 'XXXXX') as CPF
 
 
 -- Aula 21
---Conte�do da aula:
--- - Fun��o SUBSTRING
--- - Fun��o TRIM
--- - Fun��o TRANSLATE
--- - Fun��o UPPER
--- - Fun��o LOWER
--- - Fun��o IIF
--- - Fun��o REPLACE
--- - Fun��o CHARINDEX
--- - Estrutura de repeti��o WHILE
+--Conteúdo da aula:
+-- - Função SUBSTRING
+-- - Função TRIM
+-- - Função TRANSLATE
+-- - Função UPPER
+-- - Função LOWER
+-- - Função IIF
+-- - Função REPLACE
+-- - Função CHARINDEX
+-- - Estrutura de repetição WHILE
 -- testando o git por aqui
 -- agora no online
+
+--substring
+select SUBSTRING('Sinval Amaral Felisberto', 1, 7) as nome
+
+select a.nome 
+from alunos a
+
+select substring(a.nome, 1, 7) 
+from alunos a
+
+--cursor para criar uma tabela de teste, com nome com mais de uma posição
+create table ##TesteCursor
+ (
+	NOME VARCHAR(MAX),
+	DTNASCIMENTO DATE,
+	SEXO CHAR(1)
+ )
+
+DECLARE		
+	@NOME1 VARCHAR(MAX),
+	@DTNASCIMENTO1 DATE,
+	@SEXO1 CHAR(1)
+
+DECLARE 
+	cursor_DadosGerais CURSOR
+FOR 
+	select a.nome, a.data_nascimento, a.sexo 
+	from alunos a 
+	order by a.nome
+
+OPEN 
+	cursor_DadosGerais
+	FETCH NEXT FROM
+		cursor_DadosGerais
+		INTO @NOME1, @DTNASCIMENTO1, @SEXO1
+
+	WHILE @@FETCH_STATUS = 0
+		BEGIN
+			insert into ##TesteCursor values(@NOME1+' '+@NOME1, @DTNASCIMENTO1, @SEXO1)
+			fetch next from cursor_DadosGerais
+			into @NOME, @DTNASCIMENTO, @SEXO
+		END
+
+CLOSE cursor_DadosGerais
+DEALLOCATE cursor_DadosGerais
+
+
+
+select	a.nome,
+		case substring(a.nome, 1, charindex(' ', a.nome, charindex(' ', a.nome)+1))
+			when '' then 
+				a.nome
+			else 
+			substring(a.nome, 1, charindex(' ', a.nome, charindex(' ', a.nome)+1))
+		end as nome_extraido
+from ##TesteCursor a
+
+DROP TABLE ##TESTECURSOR
+
+--IIF
+use sql_server_trovato
+select * from alunos a
+select iif(10 > 3, 'Verdadeiro', 'Falso')
