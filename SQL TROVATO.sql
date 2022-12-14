@@ -916,4 +916,129 @@ select	a.nome,
 		lower(a.nome) Minusculo 
   from Alunos a
 
-  --função Union e Union All
+  --Aula 23 - função Union e Union All
+
+use AdventureWorksDW2019
+
+-- o número de colunas devem ser iguais
+select * from DimProduct
+
+select	p.EnglishProductName, 
+		p.SafetyStockLevel, 
+		p.DaysToManufacture, 
+		p.Class, 
+		p.Color
+  from DimProduct p
+ where p.Color = 'NA'
+
+ union
+
+ select	p.EnglishProductName, 
+		p.SafetyStockLevel, 
+		p.DaysToManufacture, 
+		p.Class, 
+		p.Color
+  from DimProduct p
+ where p.Color <> 'Silver'
+
+ --ignorar limitação de mesmo número de colunas
+ select	p.EnglishProductName, 
+		p.SafetyStockLevel, 
+		p.DaysToManufacture,
+		null, --adicionar o null
+		null --adicionar o null
+  from DimProduct p
+ where p.Color = 'NA'
+
+ union
+
+ select	p.EnglishProductName, 
+		p.SafetyStockLevel, 
+		p.DaysToManufacture, 
+		p.Class, 
+		p.Color
+  from DimProduct p
+ where p.Color <> 'Silver'
+
+
+ --ordem dos campos
+ select	p.EnglishProductName, 
+		p.SafetyStockLevel, 
+		p.DaysToManufacture, 
+		p.Class, 
+		p.Color
+  from DimProduct p
+ where p.Color = 'NA'
+
+ union
+
+ select	p.EnglishProductName, 
+		p.SafetyStockLevel, 
+		p.Class, 
+		p.DaysToManufacture, 
+		p.Color
+  from DimProduct p
+ where p.Color <> 'Silver'
+
+ --alias para colunas
+ --80 registros com union
+ select	p.EnglishProductName as Produto,
+		p.SafetyStockLevel as Estoque_Seguro,
+		p.DaysToManufacture Dias_Produção,
+		p.Class Classe,
+		p.Color Cor
+   from DimProduct p
+  where p.color = 'NA'
+		and p.Class is not null
+
+union
+
+ select	p.EnglishProductName as ProdutoNome,
+		p.SafetyStockLevel,
+		p.DaysToManufacture,
+		p.Class,
+		p.Color
+   from DimProduct p
+  where p.color = 'Black'
+		and p.Class = 'L'
+
+--union all diferente de union
+-- union coloca um distinct  na pesquisa
+--union all deixa todos os registros
+
+
+ --104 registros com union all
+ select	p.EnglishProductName as Produto,
+		p.SafetyStockLevel as Estoque_Seguro,
+		p.DaysToManufacture Dias_Produção,
+		p.Class Classe,
+		p.Color Cor
+   from DimProduct p
+  where p.color = 'NA'
+		and p.Class is not null
+
+union all
+
+ select	p.EnglishProductName as ProdutoNome,
+		p.SafetyStockLevel,
+		p.DaysToManufacture,
+		p.Class,
+		p.Color
+   from DimProduct p
+  where p.color = 'Black'
+		and p.Class = 'L'
+
+--mais um exemplo union all não há distinct
+select	p.EnglishProductName, 
+		p.Class, 
+		p.Color
+  from	DimProduct p
+
+UNION ALL
+
+select	p.EnglishProductName, 
+		p.Class, 
+		p.Color
+  from	DimProduct p
+
+order by 1
