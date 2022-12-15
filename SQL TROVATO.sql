@@ -165,7 +165,7 @@ select sum(1500 + 7777)
 
 --AULA 13 - O USO DO IN, NOT IN, DISTINCT NO SELECT
 use SQL_SERVER_TROVATO
-select * into #alunos from alunos
+--select * into #alunos from alunos
 drop table #alunos
 
 select c.id_curso,
@@ -1215,33 +1215,170 @@ SELECT * FROM CURSOS
 WHERE data_cadastro >= CONVERT(DATE, GETDATE())
 
 --insert com a criação de nova tabela
-select * 
-into dbo.Nova_Tabela 
+--select * 
+--into dbo.Nova_Tabela 
+--from dbo.Cursos
+
+--select * from dbo.Nova_Tabela 
+--drop table dbo.Nova_Tabela 
+
+--begin tran
+--	truncate table dbo.Nova_Tabela --apaga dados da tabela
+--	rollback
+--end 
+
+--delete from dbo.Nova_Tabela
+
+--exec sp_columns Nova_Tabela
+
+--insert into dbo.Nova_Tabela
+--select * from Cursos
+--where id_curso > 5
+
+--select * from dbo.Nova_Tabela
+
+--insert into Nova_Tabela 
+--select	c.id_curso,
+--		c.nome_curso,
+--		getdate(),
+--		'FELISBERTO'
+--from Cursos c
+
+--select * from dbo.Nova_Tabela
+
+--drop table dbo.Nova_Tabela
+
+--Aula 26: DELETE
+SELECT *
+INTO dbo.tbDelete
 from dbo.Cursos
 
-select * from dbo.Nova_Tabela 
-drop table dbo.Nova_Tabela 
+delete from dbo.tbDelete
 
-begin tran
-	truncate table dbo.Nova_Tabela --apaga dados da tabela
-	rollback
-end 
+select * from dbo.tbDelete
 
-delete from dbo.Nova_Tabela
+drop table dbo.tbDelete
 
-exec sp_columns Nova_Tabela
+SELECT *
+INTO dbo.tbDelete
+from dbo.Cursos
 
-insert into dbo.Nova_Tabela
-select * from Cursos
-where id_curso > 5
+delete from dbo.tbDelete
+where nome_curso like '%Avançado%'
 
-select * from dbo.Nova_Tabela
+select * from dbo.tbDelete
 
-insert into Nova_Tabela 
-select	c.id_curso,
-		c.nome_curso,
-		getdate(),
-		'FELISBERTO'
-from Cursos c
+DELETE FROM DBO.tbDelete
+WHERE nome_curso = 'VBA I'
 
-select * from dbo.Nova_Tabela
+SELECT *
+INTO ALUNOSTEMP
+FROM Alunos
+
+SELECT A.id_aluno
+FROM ALUNOSTEMP A
+INNER JOIN AlunosxTurmas AT
+ON A.id_aluno = AT.id_aluno
+
+DELETE FROM ALUNOSTEMP
+WHERE id_aluno NOT IN
+	(
+		SELECT A.id_aluno
+		  FROM ALUNOSTEMP A
+			INNER JOIN AlunosxTurmas AT ON A.id_aluno = AT.id_aluno
+	)
+
+
+--OPÇÃO 2
+drop table ALUNOSTEMP
+
+SELECT *
+INTO ALUNOSTEMP
+FROM Alunos
+
+
+SELECT A.NOME, A.sexo
+  FROM ALUNOSTEMP A
+ WHERE A.id_aluno NOT IN
+	 (
+		select at.id_aluno from AlunosxTurmas at where a.id_aluno = at.id_aluno
+	 )
+
+delete FROM ALUNOSTEMP 
+ WHERE id_aluno NOT IN
+	 (
+		select at.id_aluno from AlunosxTurmas at where id_aluno = at.id_aluno
+	 )
+
+
+SELECT A.NOME, A.sexo
+  FROM ALUNOSTEMP A
+ WHERE A.id_aluno IN
+	 (
+		select at.id_aluno from AlunosxTurmas at where a.id_aluno = at.id_aluno
+	 )
+
+--apagar todos os registros dos alunos com mais de 30 anos
+drop table ALUNOSTEMP
+
+SELECT *
+INTO ALUNOSTEMP
+FROM Alunos
+
+select	a.id_aluno,
+		DATEDIFF(year, a.data_nascimento, GETDATE()) as idade
+from ALUNOSTEMP a
+where datediff(year, a.data_nascimento, getdate()) > 30
+order by 2 desc
+
+select	a.id_aluno,
+		cast(DATEDIFF(dd, a.data_nascimento, GETDATE()) / 365.25 as int) as idade
+from ALUNOSTEMP a
+where cast(DATEDIFF(dd, a.data_nascimento, GETDATE()) / 365.25 as int) > 30
+order by 2 desc
+
+DELETE FROM ALUNOSTEMP
+where cast(DATEDIFF(dd, data_nascimento, GETDATE()) / 365.25 as int) > 30
+
+SELECT	A.nome,
+		A.data_nascimento,
+		--DATEDIFF(year, A.data_nascimento, GETDATE()),
+		floor(DATEDIFF(day, A.data_nascimento, GETDATE()) / 365.25) idade
+FROM Alunos A
+where month(cast(a.data_nascimento as datetime)) = 12
+
+select 
+	a.nome,
+	a.data_nascimento,
+	cast(datediff(DD, a.data_nascimento, getdate()) / 365.25 as int) as idade 
+from alunostemp a
+where month(cast(a.data_nascimento as datetime)) = 12
+
+
+select	a.nome, 
+		a.data_nascimento,
+		--dateadd(YY, datediff(YY, a.data_nascimento, getdate()), GETDATE()) - case when dateadd(yy, datediff(yy, a.data_nascimento, getdate()), getdate()) >  getdate() then 1 else 0,
+		DATEDIFF(YY, data_nascimento, GETDATE() - (CASE WHEN DATEADD(YY, DATEDIFF(YY, data_nascimento, GETDATE()), a.data_nascimento) > GETDATE() THEN 1 ELSE 0 end) as idade
+from Alunos a
+where id_aluno = 793
+
+select CAST(DATEDIFF(DAY, '20/12/2000', GETDATE()) / 365.25 AS INT) idade 
+
+print concat('idade: ',CAST(DATEDIFF(DAY, '20/12/2000', GETDATE()) / 365.25 AS INT))
+
+--aula 27 DROP
+-- apaga itens do banco de dados.
+-- tabelas, bancos, sequencias, index e outros itens do banco de dados. Não tem como reaver!
+
+create index indAlunosTeste on Alunos(id_aluno)
+
+drop index Alunos.indAlunosTeste
+
+--create procedure #procListaAlunos
+--as
+--select * from alunos
+--where alunos.nome like 'G%'
+
+--exec #procListaAlunos
+
+--drop procedure procListaAlunos
