@@ -1382,3 +1382,7 @@ drop index Alunos.indAlunosTeste
 --exec #procListaAlunos
 
 --drop procedure procListaAlunos
+
+--AULA 28 ALTER TABLE
+
+SELECT * FROM TTEMP
