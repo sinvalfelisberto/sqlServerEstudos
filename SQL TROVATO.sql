@@ -1142,3 +1142,106 @@ declare @vIDAluno int
 set @vIDAluno = next value for Test.seq_Teste02
 
 select @vIDAluno as ProximoIDAluno
+
+select * from sys.sequences
+
+--Aula 25
+-- Inserts
+--Algumas técnicas para serem utilizadas
+
+use SQL_SERVER_TROVATO
+
+select * from alunos
+select max(id_aluno) + 1 from Alunos
+
+create sequence seq_tbAlunos 
+	start with 793
+	increment by 1
+
+select next value for seq_tbAlunos
+
+exec sp_columns Alunos
+
+--insert com a descrição dos campos
+insert into dbo.Alunos
+	(	id_aluno, 
+		nome, 
+		data_nascimento, 
+		sexo, 
+		data_cadastro, 
+		login_cadastro
+	)
+	values
+	(	next value for seq_tbAlunos,
+		'Sinval Amaral Felisberto',
+		'24/08/1982',
+		'M',
+		GETDATE(),
+		'SINVA'
+	)
+
+SELECT * FROM ALUNOS A
+WHERE data_cadastro >= convert(date, getdate())
+
+EXEC SP_COLUMNS CURSOS
+
+SELECT MAX(ID_CURSO) + 1 FROM CURSOS
+
+CREATE SEQUENCE seq_tbCursos
+	as integer
+	start with 12
+	increment by 1
+
+INSERT INTO dbo.Cursos
+values
+	(
+		next value for seq_tbCursos,
+		'Curso de Power BI do Sinval',
+		getdate(),
+		'SINVA'
+	)
+
+SELECT * FROM CURSOS
+WHERE data_cadastro >= CONVERT(DATE, GETDATE())
+
+--sem usar sequences, mas gasta mais recursos do banco, por usar um select antes de gravar
+DECLARE @idCursos int
+select @idCursos = max(id_curso) + 1 from Cursos
+
+insert into dbo.Cursos
+	values(@idCursos, 'Curso de C# do Sinval', getdate(), 'SINVA')
+
+SELECT * FROM CURSOS
+WHERE data_cadastro >= CONVERT(DATE, GETDATE())
+
+--insert com a criação de nova tabela
+select * 
+into dbo.Nova_Tabela 
+from dbo.Cursos
+
+select * from dbo.Nova_Tabela 
+drop table dbo.Nova_Tabela 
+
+begin tran
+	truncate table dbo.Nova_Tabela --apaga dados da tabela
+	rollback
+end 
+
+delete from dbo.Nova_Tabela
+
+exec sp_columns Nova_Tabela
+
+insert into dbo.Nova_Tabela
+select * from Cursos
+where id_curso > 5
+
+select * from dbo.Nova_Tabela
+
+insert into Nova_Tabela 
+select	c.id_curso,
+		c.nome_curso,
+		getdate(),
+		'FELISBERTO'
+from Cursos c
+
+select * from dbo.Nova_Tabela
