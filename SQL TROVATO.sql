@@ -1386,3 +1386,141 @@ drop index Alunos.indAlunosTeste
 --AULA 28 ALTER TABLE
 
 SELECT * FROM TTEMP
+
+drop table TTEMP
+
+select *
+into #tbtemp
+from alunos
+
+update #tbtemp
+set sexo = 'm'
+
+select * from #tbtemp
+
+drop table #tbtemp
+
+select *
+into #tbtemp
+from alunos
+
+select * from #tbtemp
+where sexo is null
+
+update #tbtemp
+set sexo = null
+where id_aluno in (210, 211, 212, 213, 214, 215, 391, 392, 393)
+
+select * from #tbtemp
+where sexo is null
+
+update #tbtemp
+set sexo = 'f'
+where id_aluno between 210 and 215
+
+select * from #tbtemp
+where sexo is null
+
+update #tbtemp
+set sexo = 'm'
+where id_aluno between 391 and 393
+
+select * from #tbtemp
+where sexo is null
+
+update #tbtemp
+set sexo = null
+where id_aluno = 391
+
+select * from #tbtemp
+where sexo is null
+
+update #tbtemp
+set sexo = 'm'
+where id_aluno in (210, 211, 212, 213, 214, 215, 391, 392)
+and sexo is null
+
+select * from #tbtemp
+where sexo is null
+
+update #tbtemp
+set sexo = lower(sexo),
+	nome = upper(nome)
+where id_aluno between 200 and 290
+
+select * from #tbtemp
+where id_aluno between 195 and 295
+
+update #tbtemp set sexo = UPPER(sexo), nome = upper(nome), login_cadastro = LOWER(login_cadastro)
+
+select * from #tbtemp
+
+DROP TABLE #tbtemp
+--Aula 30 - TRANSACTION
+-- COISAS DE DBA
+
+SELECT * 
+INTO #TTEMP
+FROM ALUNOS
+
+SELECT * FROM #TTEMP
+
+BEGIN TRANSACTION
+	UPDATE #TTEMP
+	   SET SEXO = LOWER(SEXO)
+COMMIT
+
+BEGIN TRANSACTION
+	UPDATE #TTEMP
+	   SET SEXO = UPPER(SEXO)
+ROLLBACK
+
+SELECT * FROM #TTEMP
+
+BEGIN TRAN
+	DELETE FROM #TTEMP
+ROLLBACK
+
+SELECT * FROM #TTEMP
+
+---------
+DECLARE @TR1 VARCHAR(20)
+	SELECT @TR1 = 'Transação Delete'
+
+begin tran
+	delete from #TTEMP
+	where nome like 'G%'
+commit tran @tr1
+
+
+if OBJECT_ID('TabelaTeste', 'U') is not null
+	drop table TabelaTeste
+go
+
+create table TabelaTeste (
+	id int primary key,
+	letra char(1)
+)
+go
+
+--iniciar a var de controle de transactions @@TRANCOUNT PARA 1
+BEGIN TRANSACTION TR1
+	PRINT 'Transaction : contador depois do 1º begin = ' + CAST(@@TRANCOUNT AS NVARCHAR(10))
+	INSERT INTO TabelaTeste values(1, 'A')
+
+BEGIN TRANSACTION TR2
+	PRINT 'Transaction : contador depois do 2° begin = ' + CAST(@@TRANCOUNT AS NVARCHAR(10))
+	INSERT INTO TabelaTeste VALUES(2, 'B')
+
+BEGIN TRAN TR3
+	PRINT 'Transaction : contador depois do 3° begin = ' + CAST(@@TRANCOUNT AS NVARCHAR(10))
+	INSERT INTO TabelaTeste VALUES(3, 'C')
+
+COMMIT TRAN TR2
+	PRINT 'Transaction : contador depois do COMMIT TR2 = ' + CAST(@@TRANCOUNT AS NVARCHAR(10))
+
+COMMIT TRAN TR1
+	PRINT 'Transaction : contador depois do COMMIT TR1 = ' + CAST(@@TRANCOUNT AS NVARCHAR(10))
+
+COMMIT TRAN TR3
+	PRINT 'Transaction : contador depois do COMMIT TR3 = ' + CAST(@@TRANCOUNT AS NVARCHAR(10))
