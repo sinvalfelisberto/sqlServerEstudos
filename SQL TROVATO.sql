@@ -1524,3 +1524,137 @@ COMMIT TRAN TR1
 
 COMMIT TRAN TR3
 	PRINT 'Transaction : contador depois do COMMIT TR3 = ' + CAST(@@TRANCOUNT AS NVARCHAR(10))
+
+--aula 31 -- if else
+drop table #TTEMP
+
+select *
+into #ttemp
+from Alunos
+
+if 10 > 20 
+	select '10 é maior que vinte'
+else
+	select '10 é menor que vinte'
+
+declare @dtDia date = dateadd(day, 2, getdate())
+
+IF DATENAME(WEEKDAY, @dtDia) IN ('Sábado', 'Domingo')
+	select 'Estamos no final de semana. Hoje é ' + datename(WEEKDAY, @dtDia)
+else
+	select 'Não estamos no final de semana. Hoje é ' + datename(WEEKDAY, @dtDia)
+
+--variáveis globais
+select @@SERVERNAME
+select @@LANGUAGE
+select @@LANGID
+select @@TRANCOUNT
+
+if @@LANGUAGE <> 'Português (Brasil)'
+	SELECT 'Today is ' + DATENAME(weekday, getdate())
+else
+	select 'Hoje é '+ DATENAME(weekday, getdate())
+
+--Português (Brasil)
+
+set language 'English'
+select @@LANGID as 'Language ID'
+
+set language 'Português (Brasil)'
+select @@LANGID
+
+SELECT name, alias
+FROM sys.syslanguages;
+
+set language 'us_english'
+select @@LANGID AS 'Language ID'
+
+set language 'Deutsch'
+select @@LANGID
+
+set language 'us_english'
+select @@LANGUAGE
+
+if OBJECT_ID('dbo.Alunos', 'U') is null
+	print 'A tabela não existe'
+else 
+	exec sp_columns Alunos
+
+---------
+declare 
+	@vIdadeMax int, 
+	@vParam int
+
+set @vIdadeMax = 17
+set @vParam = 25
+
+if @vIdadeMax >= @vParam
+	select 
+			tp.nome, 
+			tp.data_nascimento, 
+			cast(datediff(day, tp.data_nascimento, getdate()) / 365.25 as int) as idade
+	from #ttemp tp
+	where cast(datediff(day, tp.data_nascimento, getdate()) / 365.25 as int) >= @vIdadeMax
+	order by 3 asc
+else
+	select 
+			tp.nome, 
+			tp.data_nascimento, 
+			cast(datediff(day, tp.data_nascimento, getdate()) / 365.25 as int) as idade
+	from #ttemp tp
+	where cast(datediff(day, tp.data_nascimento, getdate()) / 365.25 as int) <= @vIdadeMax
+	order by 3 asc
+
+
+declare @alteraNome varchar(max) = 'Snival Lenisberto'
+declare @nomeCliente varchar(max) 
+	set @nomeCliente = (select nome from #ttemp where nome like 'Sinval%')
+	print @nomeCliente
+
+
+if	@nomeCliente = 'Sinval Amaral Felisberto'
+begin
+	begin tran
+	update #ttemp
+	set nome = @alteraNome
+	where id_aluno = 793;
+	commit
+	print 'nome alterado com sucesso'
+end
+else
+	print 'Não foi alterado'
+
+set @nomeCliente = (select nome from #ttemp where nome like 'Sinval%')
+
+if @nomeCliente != 'Sinval Amaral Felisberto'
+	print @nomeCliente
+else
+	select  nome from #ttemp where id_aluno = 793
+
+declare @nomeCliente1 varchar(max) = 'Sinval Felisberto'
+if @nomeCliente1 = ''
+	
+
+update #ttemp
+set nome = 'Sinval Amaral Felisberto'
+where id_aluno = 793
+
+--functions
+use AdventureWorks2019
+
+create FUNCTION Sales.ufn_SalesByStore (@storeid int)
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT P.ProductID, P.Name, cast(SUM(SD.LineTotal) as numeric(10,2)) AS 'Total'
+    FROM Production.Product AS P
+    JOIN Sales.SalesOrderDetail AS SD ON SD.ProductID = P.ProductID
+    JOIN Sales.SalesOrderHeader AS SH ON SH.SalesOrderID = SD.SalesOrderID
+    JOIN Sales.Customer AS C ON SH.CustomerID = C.CustomerID
+    WHERE C.StoreID = @storeid
+    GROUP BY P.ProductID, P.Name
+);
+GO
+
+select * from Sales.ufn_SalesByStore(602)
