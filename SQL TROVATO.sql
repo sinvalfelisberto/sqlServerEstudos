@@ -1642,19 +1642,153 @@ where id_aluno = 793
 --functions
 use AdventureWorks2019
 
-create FUNCTION Sales.ufn_SalesByStore (@storeid int)
-RETURNS TABLE
-AS
-RETURN
-(
-    SELECT P.ProductID, P.Name, cast(SUM(SD.LineTotal) as numeric(10,2)) AS 'Total'
-    FROM Production.Product AS P
-    JOIN Sales.SalesOrderDetail AS SD ON SD.ProductID = P.ProductID
-    JOIN Sales.SalesOrderHeader AS SH ON SH.SalesOrderID = SD.SalesOrderID
-    JOIN Sales.Customer AS C ON SH.CustomerID = C.CustomerID
-    WHERE C.StoreID = @storeid
-    GROUP BY P.ProductID, P.Name
-);
-GO
+--create FUNCTION Sales.ufn_SalesByStore (@storeid int)
+--RETURNS TABLE
+--AS
+--RETURN
+--(
+--    SELECT P.ProductID, P.Name, cast(SUM(SD.LineTotal) as numeric(10,2)) AS 'Total'
+--    FROM Production.Product AS P
+--    JOIN Sales.SalesOrderDetail AS SD ON SD.ProductID = P.ProductID
+--    JOIN Sales.SalesOrderHeader AS SH ON SH.SalesOrderID = SD.SalesOrderID
+--    JOIN Sales.Customer AS C ON SH.CustomerID = C.CustomerID
+--    WHERE C.StoreID = @storeid
+--    GROUP BY P.ProductID, P.Name
+--)
+--GO
 
 select * from Sales.ufn_SalesByStore(602)
+
+--Aula 32: While
+use SQL_SERVER_TROVATO
+
+select *
+into #ttemp
+from Alunos
+
+select * from #ttemp
+
+declare @vString varchar(max)
+set		@vString = 'SQL           Server                  !'
+
+while CHARINDEX('  ', @vString) > 0
+begin
+	set @vString = REPLACE(@vString,'  ', ' ')
+end
+print ' '
+print @vString
+
+declare @contador int
+	set @contador = 1
+
+while @contador <= 10
+begin
+	print 'Contando: ' + cast(@contador as varchar)
+	  set @contador += 1
+end
+
+----
+declare @vcount1 int = 1
+
+while @vcount1 <= 10
+begin
+	print 'O contador está em: ' + convert(varchar, @vcount1)
+	if @vcount1 = 7
+		break
+	set @vcount1 += 1
+end
+
+--numeros ímpares
+declare @valorDigitado int
+	set @valorDigitado = 0
+
+while @valorDigitado <= 10
+begin
+	if @valorDigitado % 2 = 0
+		print 'O número ' + convert(varchar, @valorDigitado)+ ' é par!'
+	else
+		print 'O número ' + convert(varchar, @valorDigitado)+ ' é ímpar!'
+	set @valorDigitado += 1
+end
+
+drop table #ttemp
+
+set language 'English'
+
+select x.*
+into #ttemp
+from
+	(
+	select	row_number() over (partition by nome_curso order by nome_curso) linha,
+			y.id_aluno,
+			y.nome,
+			y.nome_curso,
+			y.data_inicio,
+			y.data_termino
+	from
+		(
+			select	a.id_aluno,
+					a.nome,
+					c.nome_curso,
+					t.data_inicio,
+					t.data_termino
+			from AlunosxTurmas at
+			inner join Alunos a on a.id_aluno = at.id_aluno
+			inner join Turmas t on t.id_turma = at.id_turma
+			inner join Cursos c on c.id_curso = t.id_curso
+		) y
+	) x
+
+
+select max(linha) quantidade_matriculados, nome_curso 
+from #ttemp 
+group by nome_curso
+having max(linha) > 0
+
+drop table #ttemp
+
+select y.*
+into #ttemp
+from
+	(
+		select	row_number() over (order by id_aluno) as linha,
+				x.id_aluno,
+				x.nome,
+				x.nome_curso,
+				x.data_inicio,
+				x.data_termino
+		from 
+		(select a.id_aluno, 
+				a.nome,
+				c.nome_curso,
+				t.data_inicio,
+				t.data_termino
+		from AlunosxTurmas at
+		inner join Alunos a on a.id_aluno = at.id_aluno
+		inner join Turmas t on t.id_turma = at.id_turma
+		inner join Cursos c on c.id_curso = t.id_curso) x
+	) y
+
+declare	@cont int,
+		@MaxLinhas int, 
+		@CursoProcura nvarchar(max),
+		@CursoNome nvarchar(max),
+		@NomeAluno nvarchar(max)
+
+set @CursoProcura = 'vba'
+
+select @cont = min(linha), @MaxLinhas = max(linha) from #ttemp
+--print convert(varchar, @cont) + ' ' + convert(varchar, @MaxLinhas)
+
+while @cont is not null and @cont <= @MaxLinhas
+begin
+	select	@CursoNome = nome_curso,
+			@NomeAluno = nome
+	from #ttemp
+	where linha = @cont
+
+	if CHARINDEX(@CursoProcura, @CursoNome) > 0
+		print convert(varchar, @cont) + '> Curso: ' + @CursoNome + ' Aluno: ' + @NomeAluno
+
+		set @cont += 1
+end
