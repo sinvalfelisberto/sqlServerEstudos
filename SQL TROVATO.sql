@@ -1792,3 +1792,111 @@ begin
 
 		set @cont += 1
 end
+
+--Aula 33: CASE...
+--			 ELSE...
+--				END
+
+DROP TABLE #TTEMP
+
+SET LANGUAGE 'us_english'
+
+
+select x.*
+into #ttemp
+from 
+	(
+	select	row_number() over(order by id_aluno) as linha, v.id_aluno, v.nome, v.sexo, v.nome_curso, v.data_inicio, v.data_termino, v.valor
+	from (
+		select	a.id_aluno, a.nome, a.sexo, c.nome_curso, t.data_inicio, t.data_termino, at.valor
+		from AlunosxTurmas at
+			 inner join Turmas t on t.id_turma = at.id_turma
+			 inner join Alunos a on a.id_aluno = at.id_aluno
+			 inner join Cursos c on c.id_curso = t.id_curso ) v 
+	) x
+
+select * from #ttemp
+
+update #ttemp
+set sexo = null
+where id_aluno in (2, 10, 27, 30)
+
+select	id_aluno,
+		nome,
+		case sexo
+			when 'm' then 'Masculino'
+			when 'f' then 'Feminino'
+			else 'Não definido'
+			end as sexo,
+		nome_curso
+from #ttemp
+
+----
+-- usando o case para checagem de dados
+----
+select x.*
+from 
+(
+select	id_aluno,
+		nome,
+		case sexo
+			when 'm' then 'Masculino'
+			when 'f' then 'Feminino'
+			else 'Não definido'
+			end as sexo,
+		nome_curso
+from #ttemp
+)x
+where sexo = 'Não definido'
+
+
+---
+select  nome, nome_curso, valor, convert(char, data_inicio, 103) dt_inicio,
+		case year(data_inicio)
+			when 2019 then 'Ano Anterior'
+			when 2020 then 'Ano Atual'
+			else 'Ano não esperado' 
+			end as verificação_Ano
+from #ttemp
+
+select *
+into #alunos
+from alunos
+
+select	id_aluno, 
+		nome, 
+		convert(char, data_nascimento, 103) as data_nascimento,
+		floor(datediff(dd, data_nascimento, getdate()) / 365.25) as idade,
+		case
+			when floor(datediff(dd, data_nascimento, getdate()) / 365.25) < 18 then 'Menor de Idade'
+			else 'Maior de idade' end as Maioridade
+from #alunos
+order by 4 asc
+
+select dateadd(year, -17, getdate())
+
+update #alunos
+set data_nascimento = '2004-12-21'
+where id_aluno in (726, 705, 639, 637)
+
+exec sp_columns alunos
+
+select	id_aluno, 
+		nome, 
+		convert(char, data_nascimento, 103) as dt_nascimento,
+		floor(datediff(day, data_nascimento, getdate()) / 365.25) as idade,
+		case
+			when floor(datediff(dd, data_nascimento, getdate()) / 365.25) < 18 then 'Menor de Idade'
+			else 'Maior de idade' end as Maioridade
+from #alunos
+order by 4 asc
+
+drop table ALUNOSTEMP, TabelaTeste, tbDelete
+
+select  a.nome,
+		a.sexo
+from #alunos a
+order by
+	case sexo when 'f' then 'Feminino'
+			  when 'm' then 'Masculino'
+			  else 'sexo' end asc
