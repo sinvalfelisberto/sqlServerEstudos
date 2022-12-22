@@ -3,7 +3,13 @@
 --criando
 
 --variáveis do cursor
---use [AdventureWorks2019]
+--use [AdventureWorks2019
+create table #ttemp
+(
+	nome varchar(max),
+	nome_meio varchar(max),
+	sobrenome varchar(max)
+)
 DECLARE @FirstName varchar(50),
 		@MiddleName varchar(50),
 		@LastName varchar(50)
@@ -22,9 +28,8 @@ into @FirstName, @MiddleName, @LastName
 --iteração entre os dados retornados pelo cursor
 while @@FETCH_STATUS = 0
 begin
-	
-	select @FirstName +' '+ isnull(@MiddleName, '') + ' ' + @LastName as NomeCompleto
-	select @FirstName Nome, @MiddleName NomeDoMeio, @LastName Sobrenome
+		--select @FirstName +' '+ isnull(@MiddleName, '') + ' ' + @LastName as NomeCompleto
+	insert into #ttemp values(@FirstName, @MiddleName, @LastName) 	
 	fetch next from cur_NomeCompleto
 	into @FirstName, @MiddleName, @LastName
 end
@@ -34,3 +39,6 @@ end
 --fechando e desalocando o cursor
 close cur_NomeCompleto
 deallocate cur_NomeCompleto
+select * from #ttemp
+
+select row_number() count(nome) from #ttemp 
