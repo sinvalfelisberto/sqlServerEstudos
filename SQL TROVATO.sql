@@ -1967,3 +1967,81 @@ if @@TRANCOUNT = 0
 	end
 rollback transaction
 print 'Transação desfeita'
+
+-- Aula 35
+-- TRY / CATCH
+
+--excluindo a tabela temporária
+drop table #ttemp
+
+--recriando a tabela temporária
+select x.*
+into #ttemp
+from	(select	row_number() over ( order by id_aluno) linha, 
+			y.id_aluno,
+			y.nome,
+			y.sexo,
+			y.nome_curso,
+			y.data_inicio,
+			y.data_termino,
+			y.valor
+	from 
+		(select  a.id_aluno,
+				a.nome,
+				a.sexo,
+				c.nome_curso,
+				t.data_inicio,
+				t.data_termino,
+				at.valor
+		from AlunosxTurmas at
+			 inner join Alunos a on a.id_aluno = at.id_aluno
+			 inner join Turmas t on t.id_turma = at.id_turma
+			 inner join Cursos c on c.id_curso = t.id_curso ) y ) x
+
+--exemplo 1:
+
+begin try
+	select * from temptable
+end try
+begin catch
+	select
+		ERROR_MESSAGE() as numero_erro,
+		ERROR_MESSAGE() as mensagem_erro,
+		ERROR_LINE() as linha_erro
+end catch
+
+--exemplo 2:
+
+create procedure proc_testeTryCatch
+as 
+	select * from Temptable
+
+
+drop table retorno_erros
+
+create table retorno_erros
+(
+	procedure_erro varchar(max),
+	linha_erro int,
+	mensagem_erro varchar(max),
+	numero_erro int,
+	data_erro datetime
+)
+
+--executando procedure e capturando o erro
+begin try
+	set language 'english-us'
+	exec proc_testeTryCatch
+end try
+begin catch
+	insert into retorno_erros values
+	(
+		ERROR_PROCEDURE(),
+		ERROR_LINE(),
+		ERROR_MESSAGE(),
+		ERROR_NUMBER(),
+		getdate()
+	)
+end catch
+
+SELECT * from retorno_erros
