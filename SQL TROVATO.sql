@@ -1900,3 +1900,70 @@ order by
 	case sexo when 'f' then 'Feminino'
 			  when 'm' then 'Masculino'
 			  else 'sexo' end asc
+
+-- Aula 34
+-- BEGIN/END
+-- Controle de fluxo das Instruções T-SQL (Transaction SQL)
+
+select x.*
+into #ttemp
+from 
+(
+	select	row_number() over( order by id_aluno) linha,
+			y.id_aluno,
+			y.nome,
+			y.sexo,
+			y.nome_curso,
+			y.data_inicio,
+			y.data_termino,
+			y.valor
+   from (select	a.id_aluno,
+				a.nome,
+				a.sexo,
+				c.nome_curso,
+				t.data_inicio,
+				t.data_termino,
+				at.valor
+		
+	   from AlunosxTurmas at
+			 inner join turmas t on t.id_turma = at.id_turma
+			 inner join cursos c on c.id_curso = t.id_curso
+			 inner join alunos a on a.id_aluno = at.id_aluno) y
+) x
+
+select * from #ttemp
+
+DECLARE @contadorBegin int = 0
+
+while @contadorBegin <= 10
+begin
+	print 'Contador: ' + convert(varchar, @contadorBegin)
+	set @contadorBegin += 1
+end
+
+begin transaction 
+if @@TRANCOUNT = 0
+	select t.nome, t.nome_curso, t.sexo 
+	  from #ttemp t
+	 where t.sexo = 'm'
+
+rollback transaction
+
+print 'Executar dois rollbacks geraria um erro de execução do segundo'
+
+rollback transaction
+
+print 'Transação desfeita'
+
+-- com o BEGIN aninhado
+
+begin transaction
+
+if @@TRANCOUNT = 0
+	begin
+		select nome, nome_curso, sexo from #ttemp where sexo = 'm'
+		rollback transaction
+		print 'Executar dois rollbacks gera um erro no segundo'
+	end
+rollback transaction
+print 'Transação desfeita'
