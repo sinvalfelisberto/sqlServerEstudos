@@ -1977,22 +1977,9 @@ drop table #ttemp
 --recriando a tabela temporária
 select x.*
 into #ttemp
-from	(select	row_number() over ( order by id_aluno) linha, 
-			y.id_aluno,
-			y.nome,
-			y.sexo,
-			y.nome_curso,
-			y.data_inicio,
-			y.data_termino,
-			y.valor
+from	(select	row_number() over ( order by id_aluno) linha, y.id_aluno, y.nome, y.sexo, y.nome_curso, y.data_inicio, y.data_termino, y.valor
 	from 
-		(select  a.id_aluno,
-				a.nome,
-				a.sexo,
-				c.nome_curso,
-				t.data_inicio,
-				t.data_termino,
-				at.valor
+		(select  a.id_aluno, a.nome, a.sexo, c.nome_curso, t.data_inicio, t.data_termino, at.valor
 		from AlunosxTurmas at
 			 inner join Alunos a on a.id_aluno = at.id_aluno
 			 inner join Turmas t on t.id_turma = at.id_turma
@@ -2045,3 +2032,77 @@ begin catch
 end catch
 
 SELECT * from retorno_erros
+
+DECLARE @procName varchar(max) = 'Temptable'
+SELECT DISTINCT
+       o.name AS Object_Name,
+       o.type_desc,
+	   m.definition as codigo
+FROM sys.sql_modules m
+       INNER JOIN
+       sys.objects o
+         ON m.object_id = o.object_id
+WHERE m.definition Like '%' + @procName + '%' ESCAPE '\';
+
+select count(*) quantidade_alunos, sexo, nome_curso from #ttemp
+group by sexo, nome_curso
+having sexo = 'f'
+
+
+--executando procedure e capturando o erro
+begin try
+	set language 'english-us'
+	exec proc_testeTryCatch
+end try
+begin catch
+	insert into retorno_erros values
+	(
+		ERROR_PROCEDURE(),
+		ERROR_LINE(),
+		ERROR_MESSAGE(),
+		ERROR_NUMBER(),
+		getdate()
+	)
+end catch
+
+begin try
+	EXEC proc_testeTryCatch
+	print convert(varchar, @@ERROR)
+end try
+begin catch
+	IF @@ERROR = 208
+		insert into retorno_erros values
+	(
+		ERROR_PROCEDURE(),
+		ERROR_LINE(),
+		ERROR_MESSAGE(),
+		ERROR_NUMBER(),
+		getdate()
+	)
+	ELSE
+	  PRINT 'OUTRO TIPO DE ERRO' + CONVERT(VARCHAR, @@ERROR)
+
+end catch
+
+SELECT * from retorno_erros
+
+-- Aula 36
+-- Índices
+
+drop table #ttemp
+
+select x.*
+into #ttemp
+from (select row_number() over (order by id_aluno) linha, y.id_aluno, y.nome, y.sexo, y.nome_curso, y.data_inicio, y.data_termino, y.valor 
+	    from (select a.id_aluno, a.nome, a.sexo, c.nome_curso, t.data_inicio, t.data_termino, at.valor
+			    from AlunosxTurmas at 
+					 inner join turmas t on t.id_turma = at. id_turma
+					 inner join cursos c on c.id_curso = t.id_curso
+					 right join alunos a on a.id_aluno = at.id_aluno
+					 ) y ) x --a order dos joins importa no resultado dela.
+
+
+select count(*) quantidade, a.nome from #ttemp a
+group by a.nome
+having count(*) > 0
+order by 1 desc
