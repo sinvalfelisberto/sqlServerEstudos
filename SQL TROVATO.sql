@@ -2089,6 +2089,8 @@ SELECT * from retorno_erros
 -- Aula 36
 -- Índices
 
+use SQL_SERVER_TROVATO
+
 drop table #ttemp
 
 select x.*
@@ -2104,5 +2106,20 @@ from (select row_number() over (order by id_aluno) linha, y.id_aluno, y.nome, y.
 
 select count(*) quantidade, a.nome from #ttemp a
 group by a.nome
-having count(*) > 0
+having count(*) > 1
 order by 1 desc
+
+select * from #ttemp
+
+select count(t.id_aluno) quantidade,t.id_aluno, a.data_cadastro, sum(isnull(t.valor, 0)) valor
+  from  #ttemp t
+		inner join alunos a on a.id_aluno = t.id_aluno
+group by t.id_aluno, a.data_cadastro
+having sum(isnull(t.valor, 0)) > 0
+order by 1 desc
+
+create index idx_temp on #ttemp(id_aluno)
+
+drop index #ttemp.idx_temp
+drop table #ttemp
+
