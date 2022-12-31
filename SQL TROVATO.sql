@@ -2220,3 +2220,31 @@ BEGIN
 END
 
 exec proc_IncluirNovoCurso 'Curso de Culinaria', 'SINVA'
+
+alter procedure proc_inserir_novo_curso_com_validacao
+	@nomeCurso varchar(100),
+	@loginCadastro varchar(100)
+as
+begin
+	declare @vIdCurso int,
+			@vExisteCurso int
+
+	select @vExisteCurso = id_curso from Cursos where nome_curso = @nomeCurso
+
+	if @vExisteCurso > 0
+		begin
+			select 'O curso já existe. Gravação não realizada' as retorno
+		end
+	else
+		begin
+			select @vIdCurso = max(id_curso) + 1 from cursos
+			
+			insert into cursos values (@vIdCurso, @nomeCurso, getdate(), @loginCadastro)
+		
+			select @vIdCurso = id_curso from cursos where id_curso = @vIdCurso
+			
+			select @vIdCurso as retorno
+		end
+end
+
+exec proc_inserir_novo_curso_com_validacao 'Curso de Padeiro Feliz', 'SINVA'
