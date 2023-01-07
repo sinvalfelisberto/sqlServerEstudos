@@ -2089,6 +2089,8 @@ SELECT * from retorno_erros
 -- Aula 36
 -- Índices
 
+use SQL_SERVER_TROVATO
+
 drop table #ttemp
 
 select x.*
@@ -2104,5 +2106,145 @@ from (select row_number() over (order by id_aluno) linha, y.id_aluno, y.nome, y.
 
 select count(*) quantidade, a.nome from #ttemp a
 group by a.nome
-having count(*) > 0
+having count(*) > 1
 order by 1 desc
+
+select * from #ttemp
+
+select count(t.id_aluno) quantidade,t.id_aluno, a.data_cadastro, sum(isnull(t.valor, 0)) valor
+  from  #ttemp t
+		inner join alunos a on a.id_aluno = t.id_aluno
+group by t.id_aluno, a.data_cadastro
+having sum(isnull(t.valor, 0)) > 0
+order by 1 desc
+
+create index idx_temp on #ttemp(id_aluno)
+
+drop index #ttemp.idx_temp
+drop table #ttemp
+
+-- Aula 37: Triggers
+
+create table tbSaldos
+(
+	produto varchar(10),
+	saldo_inicial varchar(10),
+	saldo_final varchar(10),
+	data_ultima_mov datetime
+)
+
+insert into tbSaldos values ('Produto A', 0, 100, getdate())
+
+create table tbVendas
+(
+	id_vendas int,
+	produto varchar(10),
+	quantidade int,
+	data datetime
+)
+
+create sequence seq_tbVendas
+	as numeric
+	start with 1
+	increment by 1
+
+create table tbHistoricoVendas
+(
+	produto varchar(10),
+	quantidade int,
+	data datetime
+)
+
+create trigger trg_ajustaSaldo
+on tbVendas
+for insert
+as
+begin
+	declare @quantidade int, @data datetime, @produto varchar(10)
+
+	select @data = DATA, @quantidade = QUANTIDADE, @produto = PRODUTO from INSERTED
+	
+	update tbSaldos
+	set saldo_final = saldo_final - @quantidade,
+		data_ultima_mov = @data
+	where produto = @produto
+
+	insert into tbHistoricoVendas 
+		values (@produto, @quantidade, @data)
+end
+
+insert into tbVendas values (next value for seq_tbVendas, 'Produto A', 2, getdate())
+
+insert into tbVendas values (next value for seq_tbVendas, 'Produto A', 5, getdate())
+
+
+select * from tbVendas
+select * from tbSaldos
+select * from tbHistoricoVendas
+
+--Aula 38: Procedures
+alter procedure proc_BuscaCurso
+	@NomeCurso varchar(20)
+as
+
+set @NomeCurso = '%' + @NomeCurso + '%'
+
+select c.id_curso, c.nome_curso, a.nome, isnull(a.sexo, 'Não informado') sexo
+from cursos c
+	inner join turmas t on t.id_curso = c.id_curso
+	inner join alunosxturmas at on at.id_turma = t.id_turma
+	inner join Alunos a on a.id_aluno = at.id_aluno
+where nome_curso like @NomeCurso
+order by 4
+
+select id_curso, nome_curso from cursos
+
+select * from Turmas
+
+
+exec proc_BuscaCurso '%'
+
+create procedure proc_IncluirNovoCurso
+	@NomeCurso varchar(100),
+	@LoginCadastrado varchar(100)
+AS
+BEGIN
+	declare @vIdCurso int
+	select @vIdCurso = max(id_curso) + 1 from Cursos
+
+	insert into cursos (id_curso, nome_curso, data_cadastro, login_cadastro) values (@vIdCurso, @NomeCurso, getdate(), @LoginCadastrado)
+
+	select @vIdCurso = id_curso from cursos where id_curso = @vIdCurso
+
+	select @vIdCurso as retorno
+END
+
+exec proc_IncluirNovoCurso 'Curso de Culinaria', 'SINVA'
+
+alter procedure proc_inserir_novo_curso_com_validacao
+	@nomeCurso varchar(100),
+	@loginCadastro varchar(100)
+as
+begin
+	declare @vIdCurso int,
+			@vExisteCurso int
+
+	select @vExisteCurso = id_curso from Cursos where nome_curso = @nomeCurso
+
+	if @vExisteCurso > 0
+		begin
+			select 'O curso já existe. Gravação não realizada' as retorno
+		end
+	else
+		begin
+			select @vIdCurso = max(id_curso) + 1 from cursos
+			
+			insert into cursos values (@vIdCurso, @nomeCurso, getdate(), @loginCadastro)
+		
+			select @vIdCurso = id_curso from cursos where id_curso = @vIdCurso
+			
+			select @vIdCurso as retorno
+		end
+end
+
+exec proc_inserir_novo_curso_com_validacao 'Curso de Padeiro Feliz', 'SINVA'
